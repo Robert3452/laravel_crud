@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTasks extends Migration
+class CreateRelationUserWithExpenseReports extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,8 @@ class CreateTasks extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('tasks');
-        Schema::create('tasks', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('description');
-            $table->string('title');
-            $table->string('author');
-            $table->timestamps();
-
+        Schema::table('expense_reports', function (Blueprint $table) {
+            $table->unsignedInteger('user_id');
         });
     }
 
@@ -31,6 +25,8 @@ class CreateTasks extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tasks');
+        Schema::table('expense_reports', function (Blueprint $table) {
+            $table->dropColumn('user_id');
+        });
     }
 }

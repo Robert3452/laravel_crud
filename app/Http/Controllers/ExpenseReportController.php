@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SummaryReport;
 use App\Models\ExpenseReport;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -13,6 +14,10 @@ use Illuminate\Routing\Redirector;
 
 class ExpenseReportController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth'); 
+    }
     /**
      * Display a listing of the resource.
      *
@@ -44,7 +49,7 @@ class ExpenseReportController extends Controller
     public function store(Request $request)
     {
         $validData = $request->validate([
-           'title' => 'required|min:5'
+            'title' => 'required|min:5'
         ]);
 
         $report = new ExpenseReport();
@@ -57,12 +62,14 @@ class ExpenseReportController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param ExpenseReport $expenseReport
      * @return Response
      */
-    public function show($id)
+    public function show(ExpenseReport $expenseReport)
     {
-        //
+        return view('expenseReport.show', [
+            'report' => $expenseReport
+        ]);
     }
 
     /**
@@ -113,5 +120,24 @@ class ExpenseReportController extends Controller
         $report = ExpenseReport::findOrFail($id);
         $report->delete();
         return redirect('/expense_reports');
+    }
+
+    public function confirmSendEmail(Request $request, int $id)
+    {
+
+        $report = ExpenseReport::findOrFail($id);
+        Mail::to($request->get('email'))->send(new SummaryReport($report));
+
+        return redirect('/expense_reports/' . $id);
+    }
+
+    public function sendEmail(Request $request, int $id)
+    {
+
+        $report = ExpenseReport::findOrFail($id);
+
+        return view('expense.confirmSendMail', [
+            'report' => $report
+        ]);
     }
 }

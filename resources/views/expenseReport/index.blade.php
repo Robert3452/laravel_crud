@@ -1,4 +1,4 @@
-@extends('layouts.base')
+@extends('layouts.app')
 
 @section('content')
     <div class="row">
@@ -17,9 +17,7 @@
             <table class="table">
                 @foreach($expense_reports as $report)
                     <tr>
-                        <td>
-                            {{$report->title}}
-                        </td>
+                        <td><a href="/expense_reports/{{$report->id}}" >{{$report->title}}</a></td>
                         <td><a href="/expense_reports/{{$report->id}}/edit" class="btn btn-secondary">Edit</a></td>
                         <td><a href="/expense_reports/{{$report->id}}/confirm_delete" class="btn btn-danger">Delete</a></td>
                     </tr>
